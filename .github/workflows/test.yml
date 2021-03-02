@@ -1,0 +1,44 @@
+# Run all tests as GitHub Actions
+name: Unit Tests
+on:
+  - push
+
+jobs:
+  facts:
+    runs-on:
+      - ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Install Puppet
+        run: |
+          sudo curl -O https://apt.puppetlabs.com/puppet7-release-$( lsb_release -sc ).deb
+          sudo dpkg -i puppet7-release-$( lsb_release -sc ).deb
+          sudo apt-get update -y
+          sudo apt-get install -y puppet-agent
+      - name: Dump Facts
+        run: |
+          /opt/puppetlabs/puppet/bin/facter
+
+  cpuinfo:
+    runs-on:
+      - ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Dump Cpuinfo
+        run: |
+          cat /proc/cpuinfo
+
+  services:
+    runs-on:
+      - ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: test
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y rng-tools
+          sudo systemctl start rng-tools
+          systemctl list-units --type service
